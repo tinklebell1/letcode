@@ -1,5 +1,9 @@
 package com.bell.arithmetic.all;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class P206 {
     public class ListNode {
         int val;
@@ -31,5 +35,9 @@ public class P206 {
             }
             return pre;
         }
+    }
+
+    public static void main(String[] args) {
+        List<?>[] list11 = new ArrayList<?>[10];
     }
 }
