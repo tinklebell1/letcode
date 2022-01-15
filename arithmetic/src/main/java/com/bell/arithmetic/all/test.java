@@ -15,7 +15,7 @@ public class test {
 
     public static void getActIds() {
         List<String> actIds = new ArrayList<>();
-        String file = "test.txt";
+        String file = "/Users/belltinkle/my/letcode/letcode/test.txt";
         File textFile = new File(file);
         try (FileReader fileReader = new FileReader(textFile);
              BufferedReader br = new BufferedReader(fileReader)) {
@@ -30,15 +30,16 @@ public class test {
     }
 
     public static void genOutFile(List<String> strs){
-        String file = "out.sql";
+        String file = "/Users/belltinkle/my/letcode/letcode/out.sql";
         StringBuilder write = new StringBuilder();
         try( FileOutputStream fileOutputStream = new FileOutputStream(file);
              BufferedOutputStream buff = new BufferedOutputStream(fileOutputStream);) {
             if(strs.size() > 0){
                 for (String str : strs) {
-                    write.append("update maitao.act_city set status=9 where act_city_id='");
+                    write.append("'");
                     write.append(str);
-                    write.append("';\n");
+                    write.append("',\n");
+//                    write.append(";\n");
                 }
                 buff.write(write.toString().getBytes(StandardCharsets.UTF_8));
                 buff.flush();
