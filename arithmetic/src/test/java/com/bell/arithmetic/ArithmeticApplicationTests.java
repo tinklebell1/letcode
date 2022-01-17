@@ -17,6 +17,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,9 @@ class ArithmeticApplicationTests {
     void contextLoads() {
 
         String pSalesFileName = PATH + "psales.xlsx";
+        //第一批供应商id
+        String finishIdName = PATH + "finishId.xlsx";
+        // 第二批id，需要把之前错误图片的那一个换掉
         String pImagesFileName = PATH + "供应商简.xlsx";
         String pImageAndSaleFileName = PATH + "pImageAndSale.xlsx";
 
@@ -37,6 +41,7 @@ class ArithmeticApplicationTests {
         List<Sales> pSales = new ArrayList<>();
         List<PImages> pImages = new ArrayList<>();
         List<PSalesAndImage> pSalesAndImages = new ArrayList<>();
+        List<Sales> finishIds = new ArrayList<>();
 
         EasyExcel.read(pSalesFileName, Sales.class, new PageReadListener<Sales>(dataList -> {
             for (Sales sale : dataList) {
@@ -45,9 +50,19 @@ class ArithmeticApplicationTests {
         })).sheet().doRead();
         Map<String, Sales> salesMap = pSales.stream().collect(Collectors.toMap(Sales::getPartnerId, Function.identity()));
 
+        EasyExcel.read(finishIdName, Sales.class, new PageReadListener<Sales>(dataList -> {
+            for (Sales sale : dataList) {
+                finishIds.add(sale);
+            }
+        })).sheet().doRead();
+        Set<String> fIds = finishIds.stream().map(Sales::getPartnerId).collect(Collectors.toSet());
+
 
         EasyExcel.read(pImagesFileName, PImages.class, new PageReadListener<PImages>(dataList -> {
             for (PImages pImage : dataList) {
+                if(fIds.contains(pImage.getPartnerID())){
+                    continue;
+                }
                 PSalesAndImage pSalesAndImage = new PSalesAndImage();
                 pSalesAndImage.setPartnerId(pImage.getPartnerID());
                 pSalesAndImage.setImg(pImage.getImg());
