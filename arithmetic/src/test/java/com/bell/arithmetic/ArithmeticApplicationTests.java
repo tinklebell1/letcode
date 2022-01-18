@@ -3,6 +3,7 @@ package com.bell.arithmetic;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.bell.arithmetic.partner.dto.read.PImages;
+import com.bell.arithmetic.partner.dto.read.PImages2;
 import com.bell.arithmetic.partner.dto.read.Sales;
 import com.bell.arithmetic.partner.dto.write.PSalesAndImage;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 class ArithmeticApplicationTests {
 
-    private static final String PATH = "/Users/belltinkle/work/供应商统计/";
+    private static final String PATH = "D:/gongy/";
 
     @Test
     void contextLoads() {
@@ -91,7 +92,7 @@ class ArithmeticApplicationTests {
         try {
             filename = imgUrl.substring(imgUrl.lastIndexOf("/"));
             // TODO: 2022/1/14  图片保存位置
-            String savePath = "/Users/belltinkle/work/供应商统计/test";
+            String savePath = "D:/gongy/partner";
             URL url = new URL(imgUrl);
             URLConnection con = url.openConnection();
             con.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko");
@@ -114,7 +115,7 @@ class ArithmeticApplicationTests {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "./test" + filename;
+        return "/partner/" + filename;
     }
 
     private static byte[] readInputStream(InputStream inputStream) throws IOException {
@@ -128,5 +129,93 @@ class ArithmeticApplicationTests {
         bos.close();
         return bos.toByteArray();
     }
+
+    @Test
+    void test2() {
+
+        String pSalesFileName = PATH + "1.xls";
+        String pSalesFileName1 = PATH + "2.xls";
+        List<Sales> pSales = new ArrayList<>();
+        EasyExcel.read(pSalesFileName, Sales.class, new PageReadListener<Sales>(dataList -> {
+            for (Sales sale : dataList) {
+                pSales.add(sale);
+            }
+        })).sheet().doRead();
+        List<String> collect = pSales.stream().map(Sales::getPartnerId).collect(Collectors.toList());
+
+
+        List<Sales> pSales1 = new ArrayList<>();
+        for (String s : collect) {
+            Sales sales = new Sales();
+            if(s.matches("[+-]?[1-9]+[0-9]*(\\.[0-9]+)?")){
+
+                BigDecimal bigDecimal = new BigDecimal(Double.parseDouble(s)).setScale(0,BigDecimal.ROUND_HALF_DOWN);
+
+                sales.setPartnerId(s);
+                sales.setSales1("CNY" + bigDecimal.toString());
+
+            }else {
+//                if("啥".equals(s)){
+//                    sales.setPartnerId("");
+//                    sales.setSales1("");
+//                }else{
+                    sales.setPartnerId(s);
+                    sales.setSales1(s);
+//                }
+            }
+            pSales1.add(sales);
+        }
+
+        EasyExcel.write(pSalesFileName1, PSalesAndImage.class)
+                .sheet("sheet1")
+                .doWrite(() -> {
+                    // 分页查询数据
+                    return pSales1;
+                });
+
+
+
+    }
+    @Test
+    void test3() {
+
+        String readImg = PATH + "readImg.xls";
+        String writeImg = PATH + "writeImg2.xls";
+        List<PImages2>  images2List  = new ArrayList<>();
+        List<PImages2>  writeList  = new ArrayList<>();
+
+        EasyExcel.read(readImg, PImages2.class, new PageReadListener<PImages2>(dataList -> {
+            for (PImages2 p : dataList) {
+                images2List.add(p);
+            }
+        })).sheet().doRead();
+
+        List<String> img1 = images2List.stream().map(PImages2::getImg1).collect(Collectors.toList());
+
+        for (PImages2 pImages2 : images2List) {
+
+            PImages2 p = new PImages2();
+            p.setImg2(pImages2.getImg2());
+            if(img1.contains(pImages2.getImg2())){
+                p.setImg1("");
+                p.setFlag("1");
+            }else{
+                p.setImg1("");
+                p.setFlag("0");
+            }
+            writeList.add(p);
+        }
+
+        EasyExcel.write(writeImg, PSalesAndImage.class)
+                .sheet("sheet1")
+                .doWrite(() -> {
+                    // 分页查询数据
+                    return writeList;
+                });
+
+    }
+
+
+
 }
 

@@ -17,4 +17,6 @@ public class Sales {
 
     private BigDecimal sales;
 
+    private String sales1;
+
 }
