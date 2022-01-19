@@ -15,6 +15,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -214,6 +215,86 @@ class ArithmeticApplicationTests {
                 });
 
     }
+
+
+    @Test
+    void test4() {
+        String path = PATH + "partner1";
+        String imgAndId = PATH + "imgAndId.xls";
+        String writeImages = PATH + "writeImages.xls";
+        List<PImages> imagesList = new ArrayList<>();
+        List<PImages> writeImagesList = new ArrayList<>();
+
+
+        EasyExcel.read(imgAndId, PImages.class, new PageReadListener<PImages>(dataList -> {
+            for (PImages p : dataList) {
+                imagesList.add(p);
+            }
+        })).sheet().doRead();
+        Map<String, PImages> imagesMap = imagesList.stream().collect(Collectors.toMap(PImages::getPartnerName, Function.identity()));
+
+
+        File folder = new File(path);
+
+        File[] fileArr = folder.listFiles();
+
+        for (File file : fileArr) {
+            String name = file.getName();
+            PImages pImages = imagesMap.get("/partner/" + name);
+            String substring = name.substring(name.lastIndexOf(".") + 1);
+            File newFile = new File(PATH + "partner1/" + pImages.getPartnerID() + "." + substring);
+            PImages pImages1 = new PImages();
+            pImages1.setPartnerID(pImages.getPartnerID());
+            pImages1.setPartnerName("/partner/"+ pImages.getPartnerID() + "." + substring);
+            writeImagesList.add(pImages1);
+            file.renameTo(newFile);
+        }
+
+        EasyExcel.write(writeImages, PSalesAndImage.class)
+                .sheet("sheet1")
+                .doWrite(() -> {
+                    // 分页查询数据
+                    return writeImagesList;
+                });
+
+
+    }
+
+    @Test
+    void test5() {
+
+
+        String imgAndId = PATH + "imgAndId.xls";
+        String writeImages = PATH + "writeImages.xls";
+        List<PImages> imagesList = new ArrayList<>();
+        List<PImages> writeList = new ArrayList<>();
+
+        EasyExcel.read(imgAndId, PImages.class, new PageReadListener<PImages>(dataList -> {
+            for (PImages p : dataList) {
+                imagesList.add(p);
+            }
+        })).sheet().doRead();
+        Map<String, PImages> imagesMap = imagesList.stream().collect(Collectors.toMap(PImages::getPartnerID, Function.identity()));
+
+        for (PImages pImages : imagesList) {
+            PImages newp = new PImages();
+            newp.setPartnerID(pImages.getPartnerID());
+            newp.setPartnerName(pImages.getPartnerName());
+            String partnerName = pImages.getPartnerName();
+            String substring = partnerName.substring(partnerName.lastIndexOf(".") + 1);
+            newp.setImg("/partner/" + pImages.getPartnerID() + "." + substring);
+            writeList.add(newp);
+
+        }
+        EasyExcel.write(writeImages, PSalesAndImage.class)
+                .sheet("sheet1")
+                .doWrite(() -> {
+                    // 分页查询数据
+                    return writeList;
+                });
+
+    }
+
 
 
 
