@@ -25,5 +25,11 @@ public class PSalesAndImage {
     private int saleFlag;
     @ExcelProperty("本地图片地址")
     private String localImg;
+    @ExcelProperty("分数")
+    private String score;
+    @ExcelProperty("麦淘url")
+    private String mtUrl;
+    @ExcelProperty("创建时间")
+    private String date;
 
 }

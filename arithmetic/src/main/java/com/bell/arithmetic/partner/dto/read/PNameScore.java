@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-public class PImages {
+public class PNameScore {
 
     private String partnerId;
-
-    private String img;
+    private String name;
+    private String score;
 
 }
