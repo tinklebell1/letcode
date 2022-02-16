@@ -2,6 +2,7 @@ package com.bell.arithmetic;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
+import com.bell.arithmetic.partner.AESUtilForShardingsphere;
 import com.bell.arithmetic.partner.dto.read.PDate;
 import com.bell.arithmetic.partner.dto.read.PImages;
 import com.bell.arithmetic.partner.dto.read.PNameScore;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StringUtils;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -29,6 +33,7 @@ import java.util.stream.Collectors;
 class ArithmeticApplicationTests {
 
     private static final String PATH = "/Users/belltinkle/work/供应商统计/final/";
+    private static final String PATH1 = "/Users/belltinkle/work/sql/xm/";
     private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM月dd日");
 
     @Test
@@ -206,6 +211,39 @@ class ArithmeticApplicationTests {
         }
         bos.close();
         return bos.toByteArray();
+    }
+
+
+    @Test
+    void contextLoads2() {
+        String pCDate = PATH1 + "1.xlsx";
+        String pImageAndSaleFileName = PATH1 + "2.xlsx";
+        List<PDate> dates = new ArrayList<>();
+        List<PDate> dates2 = new ArrayList<>();
+
+
+
+        EasyExcel.read(pCDate, PDate.class, new PageReadListener<PDate>(dataList -> {
+            for (PDate p : dataList) {
+                dates.add(p);
+            }
+        })).sheet().doRead();
+
+        for (PDate date : dates) {
+            String partnerId = date.getPartnerId();
+            String decrypt = AESUtilForShardingsphere.decrypt(partnerId);
+            date.setName(decrypt);
+            dates2.add(date);
+        }
+        EasyExcel.write(pImageAndSaleFileName, PSalesAndImage.class)
+                .sheet("sheet1")
+                .doWrite(() -> {
+                    // 分页查询数据
+                    return dates2;
+                });
+
+
+
     }
 }
 

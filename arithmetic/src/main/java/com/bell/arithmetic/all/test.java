@@ -3,14 +3,15 @@ package com.bell.arithmetic.all;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class test {
 
     public static void main(String[] args) {
-
-        getActIds();
-
+        Date now = new Date(1647332798000L);
+        System.out.println(now);
     }
 
     public static void getActIds() {
