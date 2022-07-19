@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 class ArithmeticApplicationTests {
 
     private static final String PATH = "/Users/belltinkle/work/供应商统计/final/";
-    private static final String PATH1 = "/Users/belltinkle/work/sql/xm/";
+    private static final String PATH1 = "/Users/belltinkle/work/sql/zl/";
     private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM月dd日");
 
     @Test

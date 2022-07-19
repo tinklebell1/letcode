@@ -8,7 +8,7 @@ import java.util.Queue;
 
 public class P37 {
     public static void main(String[] args) {
-
+        System.out.println(0 >= (((double) (2 +1 )) / 3));
     }
 
     public static class TreeNode {
